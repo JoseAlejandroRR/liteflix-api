@@ -3,6 +3,7 @@ import { User } from './User'
 import { CreateMovieDto } from '../dto/CreateMovieDto'
 import MovieStatus from '../enums/MovieStatus'
 import { UserMovie } from './UserMovie'
+import { UpdateMovieDto } from '../dto/UpdateMovieDto'
 
 export const TABLE_MOVIES = 'movies'
 
@@ -61,6 +62,37 @@ export class Movie extends BaseEntity {
     movie.userId = input.userId
 
     return movie
+  }
+
+  update(changes: UpdateMovieDto): void {
+
+    if (changes.title !== undefined) {
+      this.title = changes.title
+    }
+
+    if (changes.description !== undefined) {
+      this.description = changes.description
+    }
+
+    if (changes.status !== undefined) {
+      this.status = changes.status
+    }
+
+    if (changes.releasedAt !== undefined) {
+      this.releasedAt = changes.releasedAt
+    }
+
+    if (changes.rating !== undefined) {
+      this.rating = changes.rating
+    }
+
+    if (changes.imageURL !== undefined) {
+      this.imageURL = changes.imageURL
+    }
+
+    if (changes.thumbnailURL !== undefined) {
+      this.thumbnailURL = changes.thumbnailURL
+    }
   }
 
 }

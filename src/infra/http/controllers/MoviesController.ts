@@ -7,6 +7,7 @@ import MovieViewModel from '@/domain/views/auth/MovieViewModel'
 import { AuthSession } from '@/domain/security'
 import { CreateMovieDto } from '@/domain/dto/CreateMovieDto'
 import MovieStatus from '@/domain/enums/MovieStatus'
+import { UpdateMovieDto } from '@/domain/dto/UpdateMovieDto'
 
 @injectable()
 class MoviesController extends BaseController {
@@ -44,7 +45,7 @@ class MoviesController extends BaseController {
     const data = await ctx.req.formData()
 
     const input:CreateMovieDto = {
-      ...(data.get('title') ? { description: data.get('title')?.toString()! } : {}),
+      ...(data.get('title') ? { title: data.get('title')?.toString()! } : {}),
       status: data.get('status') as MovieStatus,
       ...(data.get('description') ? { description: data.get('description')?.toString()! } : {}),
       ...(data.get('releasedAt') ? { releasedAt: new Date( data.get('releasedAt')?.toString()!) } : {}),
@@ -52,6 +53,15 @@ class MoviesController extends BaseController {
     }
 
     const movie = await this.movieManager.createMovie(input, this.getAuthSession(ctx))
+
+    return ctx.json(ViewModel.createOne(MovieViewModel, movie), 201)
+  }
+
+  async updateMovie(ctx: Context) {
+    const { movieId } = ctx.req.param()
+    const input: UpdateMovieDto = await ctx.req.json()
+
+    const movie = await this.movieManager.updateMovie(movieId, input, this.getAuthSession(ctx))
 
     return ctx.json(ViewModel.createOne(MovieViewModel, movie), 201)
   }

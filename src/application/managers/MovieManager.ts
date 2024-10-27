@@ -9,6 +9,7 @@ import { deleteFile, getUUID, writeFile } from '@/infra/utils'
 import { ServiceProviderIds } from '@/domain/ServiceProvideIds'
 import { IStorageService } from '@/domain/storage/IStorageService'
 import { AuthSession } from '@/domain/security'
+import { UpdateMovieDto } from '@/domain/dto/UpdateMovieDto'
 
 @injectable()
 class MovieManager extends BaseManager {
@@ -78,6 +79,13 @@ class MovieManager extends BaseManager {
     )
 
     await deleteFile(filePath!)
+
+    return movie
+  }
+
+  async updateMovie(id: string, input: UpdateMovieDto, auth: AuthSession): Promise<Movie> {
+
+    const movie = await this.movieService.updateMovie(id, input, auth)
 
     return movie
   }

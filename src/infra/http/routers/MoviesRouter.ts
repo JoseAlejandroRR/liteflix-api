@@ -28,6 +28,11 @@ class MoviesRouter extends GatewayRouter {
       this.controller.deleteById.bind(this.controller)
     )
 
+    this.routes.put(
+      '/:movieId',
+      this.controller.updateMovie.bind(this.controller)
+    )
+
     this.routes.get(
       '/:movieId',
       this.controller.getMovieById.bind(this.controller)

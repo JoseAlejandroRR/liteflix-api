@@ -10,6 +10,7 @@ import { CreateMovieDto } from '@/domain/dto/CreateMovieDto'
 import { AuthSession } from '@/domain/security'
 import UserRole from '@/domain/enums/UserRole'
 import UnauthorizedUserException from '@/domain/exceptions/UnauthorizedUserException'
+import { UpdateMovieDto } from '@/domain/dto/UpdateMovieDto'
 
 export type MovieSearchParams = {
   status?: MovieStatus,
@@ -71,6 +72,16 @@ class MovieService {
     })
 
     movie = await this.movieRepository.create(movie)
+
+    return movie
+  }
+
+  async updateMovie(id: string, data: UpdateMovieDto, auth: AuthSession): Promise<Movie> {
+    let movie = await this.getMovieById(id)
+
+    movie.update(data)
+
+    movie = await this.movieRepository.update(movie)
 
     return movie
   }
