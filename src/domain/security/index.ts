@@ -1,7 +1,8 @@
 import { User } from '../models/User'
 
 export interface AuthSession {
-  user: User
+  user?: User,
+  isAnonymous: boolean
 }
 
 export interface AuthenticationResult {

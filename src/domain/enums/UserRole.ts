@@ -1,6 +1,6 @@
 enum UserRole {
 	USER = 'USER',
-	EMPLOYEE = 'EMPLOYEE',
+	CUSTOMER = 'CUSTOMER',
 	ADMIN = 'ADMIN',
 }
 

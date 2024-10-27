@@ -1,10 +1,10 @@
 import { inject, injectable } from 'tsyringe'
 import UserService from '../services/UserService'
 import { AuthenticationResult, UserCredentials } from '@/domain/security'
-import UserViewModel from '@/domain/views/auth/UserViewModel'
+import BaseManager from './BaseManager'
 import { sign } from 'jsonwebtoken'
 import ViewModel from '@/domain/views/ViewModel'
-import BaseManager from './BaseManager'
+import UserViewModel from '@/domain/views/auth/UserViewModel'
 
 const { JWT_SECRET_KEY } = process.env
 

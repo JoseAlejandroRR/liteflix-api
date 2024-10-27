@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm'
 import UserRole from './../../domain/enums/UserRole'
 import { User } from './../../domain/models/User'
 import { Seeder, SeederFactoryManager } from 'typeorm-extension'
+
 export class UsersSeeder1729906709413 implements Seeder {
   track = false
 
@@ -22,7 +23,17 @@ export class UsersSeeder1729906709413 implements Seeder {
         password: '123123',
     })
     await repository.save(manager)
+
+    const userDemo = User.create({
+        firstname: 'User',
+        lastname: 'Demo',
+        role: UserRole.CUSTOMER,
+        email: 'demo@demo.com',
+        password: '123123',
+    })
     
+    await repository.save(userDemo)
+
     const userFactory = factoryManager.get(User)
 
     await userFactory.saveMany(5)

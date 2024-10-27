@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { authMiddleware } from './middlewares/AuthMiddleware'
+import AuthenticatorMiddleware from './middlewares/AuthenticatorMiddleware'
 
 const { SERVER_ORIGINS } = process.env
 
@@ -19,6 +20,7 @@ httpServer.use(logger())
 
 // Auth Middleware
 httpServer.use('/api/*', authMiddleware);
+httpServer.use('/api/*', AuthenticatorMiddleware);
 
 // Healtcheck
 httpServer.get('/health', (c) => {
