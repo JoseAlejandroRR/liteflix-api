@@ -1,8 +1,9 @@
 import fs from 'fs'
 import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { IStorageService } from '@/domain/storage/IStorageService'
-import mime from 'mime'
 import { injectable } from 'tsyringe'
+import { getFileNameFromPath, writeFile } from './utils'
+import mime from 'mime'
 
 const { AWS_REGION, AWS_BUCKET_NAME } = process.env
 
@@ -13,28 +14,26 @@ const s3Client = new S3Client({ region: AWS_REGION })
 @injectable()
 export class S3StorageService implements IStorageService {
   
-  async getObject(key: string): Promise<any> {
+  async getObject(key: string): Promise<string> {
     try {
       const command = new GetObjectCommand({
         Bucket: BUCKET_NAME,
         Key: key,
       })
       const data = await s3Client.send(command)
+      const { Body } = data
 
-      const streamToString = (stream: NodeJS.ReadableStream): Promise<string> =>
-        new Promise((resolve, reject) => {
-          const chunks: Uint8Array[] = []
-          stream.on('data', (chunk) => chunks.push(chunk))
-          stream.on('error', reject)
-          stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')))
-        })
+      const blob = await Body!.transformToByteArray()
+      const dest = await writeFile(
+        getFileNameFromPath(key),
+        Buffer.from(blob)
+      )
 
-      const bodyContent = await streamToString(data.Body as NodeJS.ReadableStream)
-      return JSON.parse(bodyContent)
+      return dest!
     } catch (error) {
       console.error('[getObject] Error:', error)
-      throw error
     }
+    return ''
   }
 
   async putObject(key: string, path: string): Promise<void> {

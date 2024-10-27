@@ -11,6 +11,8 @@ import { AuthSession } from '@/domain/security'
 import UserRole from '@/domain/enums/UserRole'
 import UnauthorizedUserException from '@/domain/exceptions/UnauthorizedUserException'
 import { UpdateMovieDto } from '@/domain/dto/UpdateMovieDto'
+import { IEventBus } from '@/domain/events/IEventBus'
+import { EventType } from '@/domain/events/EventType'
 
 export type MovieSearchParams = {
   status?: MovieStatus,
@@ -24,6 +26,7 @@ class MovieService {
 
   constructor(
     @inject(ServiceProviderIds.MovieRepository) private movieRepository: IMovieRepository,
+    @inject(ServiceProviderIds.EventBus) private evenBus: IEventBus,
   ) {}
 
   async getMovieById(id: string): Promise<Movie> {
@@ -73,26 +76,54 @@ class MovieService {
 
     movie = await this.movieRepository.create(movie)
 
+    this.evenBus.emit({
+      name: EventType.Movie.Created,
+      payload: {
+        movie
+      },
+      timestamp: new Date()
+    })
+
     return movie
   }
 
   async updateMovie(id: string, data: UpdateMovieDto, auth: AuthSession): Promise<Movie> {
     let movie = await this.getMovieById(id)
 
+    const previousState = Object.assign({}, movie)
+
     movie.update(data)
 
-    movie = await this.movieRepository.update(movie)
+    const movieUpdated = await this.movieRepository.update(movie)
 
-    return movie
+    this.evenBus.emit({
+      name: EventType.Movie.Updated,
+      payload: {
+        movie: movieUpdated,
+        previousState,
+        user: auth.user!
+      },
+      timestamp: new Date()
+    })
+
+    return movieUpdated
   }
 
   async deleteMovie(movie: Movie, auth: AuthSession): Promise<boolean> {
     const { user } = auth
-    if (user?.role !== UserRole.USER) {
+    if (user?.role !== UserRole.ADMIN) {
       throw new UnauthorizedUserException()
     }
 
     const result = await this.movieRepository.delete(movie)
+
+    this.evenBus.emit({
+      name: EventType.Movie.Deleted,
+      payload: {
+        movie
+      },
+      timestamp: new Date()
+    })
 
     return result
   }

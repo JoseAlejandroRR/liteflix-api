@@ -12,7 +12,6 @@ import { AuthSession } from '@/domain/security'
 import { UpdateMovieDto } from '@/domain/dto/UpdateMovieDto'
 import MovieStatus from '@/domain/enums/MovieStatus'
 import IDatabase from '@/domain/database/IDatabase'
-import { S3StorageService } from '@/infra/S3StorageService'
 
 @injectable()
 class MovieManager extends BaseManager {
@@ -37,14 +36,6 @@ class MovieManager extends BaseManager {
     const result = await this.movieService.deleteMovie(movie, auth)
 
     if (!result) return false
-
-    if (movie.imageURL) {
-      await this.storage.deleteObject(movie.imageURL)
-    }
-
-    if (movie.thumbnailURL) {
-      await this.storage.deleteObject(movie.thumbnailURL)
-    }
 
     return result
   }

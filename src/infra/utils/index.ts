@@ -1,5 +1,6 @@
 
 import fs from 'fs/promises'
+import { Readable } from 'stream'
 import { v4 } from 'uuid'
 
 const { TEMP_FOLDER } = process.env
@@ -34,10 +35,18 @@ export const writeFile = async (
   return null
 }
 
+export const streamToString = (stream: Readable): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const chunks: Uint8Array[] = []
+    stream.on("data", (chunk) => chunks.push(chunk))
+    stream.on("error", reject)
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString('utf-8')))
+  })
+}
+
 export const deleteFile = async (filePath: string): Promise<boolean> => {
-  const dest = `${TEMP_FOLDER}/${filePath}`
   try {
-    await fs.rm(dest)
+    await fs.rm(filePath)
 
     return true
   } catch (err) {
@@ -45,6 +54,10 @@ export const deleteFile = async (filePath: string): Promise<boolean> => {
   }
 
   return false
+}
+
+export const getFileNameFromPath = (filePath: string): string => {
+  return filePath.split('/').pop() || ''
 }
 
 export const getUUID = (): string => v4()

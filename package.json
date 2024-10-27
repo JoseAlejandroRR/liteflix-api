@@ -28,6 +28,7 @@
     "mysql": "^2.18.1",
     "path-to-regexp": "^8.2.0",
     "reflect-metadata": "^0.2.2",
+    "sharp": "^0.33.5",
     "tsconfig-paths": "^4.2.0",
     "tsyringe": "^4.8.0",
     "typeorm": "^0.3.20",
