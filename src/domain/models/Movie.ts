@@ -12,13 +12,13 @@ export class Movie extends BaseEntity {
   id!: string
 
   @Column({ type: 'varchar' })
-  title!: string
+  title?: string
 
   @Column({ type: 'varchar' })
   description?: string
 
   @Column({ name:'released_at', type: 'datetime'})
-  releasedAt!: Date
+  releasedAt?: Date
 
   @Column({ type: 'float' })
   rating?: number
@@ -53,7 +53,7 @@ export class Movie extends BaseEntity {
 
     movie.title = input.title
     movie.description = input.description
-    movie.status = input.status
+    movie.status = input.status ?? MovieStatus.DRAFT
     movie.releasedAt = input.releasedAt
     movie.rating = input.rating
     movie.imageURL = input.imageURL

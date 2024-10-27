@@ -6,6 +6,10 @@ import { Movie } from '@/domain/models/Movie'
 import MovieStatus from '@/domain/enums/MovieStatus'
 import { User } from '@/domain/models/User'
 import { PaginationResult } from '@/domain/models'
+import { CreateMovieDto } from '@/domain/dto/CreateMovieDto'
+import { AuthSession } from '@/domain/security'
+import UserRole from '@/domain/enums/UserRole'
+import UnauthorizedUserException from '@/domain/exceptions/UnauthorizedUserException'
 
 export type MovieSearchParams = {
   status?: MovieStatus,
@@ -58,6 +62,28 @@ class MovieService {
     })
 
     return movies
+  }
+
+  async createMovie(data: CreateMovieDto, auth: AuthSession): Promise<Movie> {
+    let movie = Movie.factory({
+      ...data,
+      userId: auth.user!.id!,
+    })
+
+    movie = await this.movieRepository.create(movie)
+
+    return movie
+  }
+
+  async deleteMovie(movie: Movie, auth: AuthSession): Promise<boolean> {
+    const { user } = auth
+    if (user?.role !== UserRole.USER) {
+      throw new UnauthorizedUserException()
+    }
+
+    const result = await this.movieRepository.delete(movie)
+
+    return result
   }
 }
 

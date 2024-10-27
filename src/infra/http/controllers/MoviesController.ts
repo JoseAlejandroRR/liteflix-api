@@ -5,6 +5,8 @@ import ViewModel from '@/domain/views/ViewModel'
 import MovieManager from '@/application/managers/MovieManager'
 import MovieViewModel from '@/domain/views/auth/MovieViewModel'
 import { AuthSession } from '@/domain/security'
+import { CreateMovieDto } from '@/domain/dto/CreateMovieDto'
+import MovieStatus from '@/domain/enums/MovieStatus'
 
 @injectable()
 class MoviesController extends BaseController {
@@ -25,8 +27,6 @@ class MoviesController extends BaseController {
   async getMyMovieList(ctx: Context) {
     const auth: AuthSession = this.getAuthSession(ctx)
 
-    console.log(auth)
-
     const movies = await this.movieManager.getMyMoviesByUser(auth.user!)
 
     return ctx.json(ViewModel.createPage(MovieViewModel, movies))
@@ -35,9 +35,36 @@ class MoviesController extends BaseController {
   async getMovieById(ctx: Context) {
     const { movieId } = ctx.req.param()
 
-    const employee = await this.movieManager.getMovieById(movieId)
+    const movie = await this.movieManager.getMovieById(movieId)
 
-    return ctx.json(ViewModel.createOne(MovieViewModel, employee))
+    return ctx.json(ViewModel.createOne(MovieViewModel, movie))
+  }
+
+  async createMovie(ctx: Context) {
+    const data = await ctx.req.formData()
+
+    const input:CreateMovieDto = {
+      ...(data.get('title') ? { description: data.get('title')?.toString()! } : {}),
+      status: data.get('status') as MovieStatus,
+      ...(data.get('description') ? { description: data.get('description')?.toString()! } : {}),
+      ...(data.get('releasedAt') ? { releasedAt: new Date( data.get('releasedAt')?.toString()!) } : {}),
+      image: data.get('image') as File
+    }
+
+    const movie = await this.movieManager.createMovie(input, this.getAuthSession(ctx))
+
+    return ctx.json(ViewModel.createOne(MovieViewModel, movie), 201)
+  }
+
+  async deleteById(ctx: Context) {
+    const { movieId } = ctx.req.param()
+
+    const result = await this.movieManager.deleteMovieById(
+      movieId,
+      this.getAuthSession(ctx)
+    )
+
+    return ctx.json({ success: result })
   }
 
 }

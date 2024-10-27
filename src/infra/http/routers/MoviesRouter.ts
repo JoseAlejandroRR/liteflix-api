@@ -2,6 +2,7 @@ import { inject, injectable } from 'tsyringe'
 import { GatewayRouter } from '../GatewayRouter'
 import MoviesController from '../controllers/MoviesController'
 import GetAllMoviesRequest from '../requests/GetAllMoviesRequest'
+import PostCreateMovieRequest from '../requests/PostCreateMovieRequest'
 
 
 @injectable()
@@ -22,9 +23,20 @@ class MoviesRouter extends GatewayRouter {
       this.controller.getMyMovieList.bind(this.controller)
     )
 
+    this.routes.delete(
+      '/:movieId',
+      this.controller.deleteById.bind(this.controller)
+    )
+
     this.routes.get(
       '/:movieId',
       this.controller.getMovieById.bind(this.controller)
+    )
+
+    this.routes.post(
+      '/',
+      ...PostCreateMovieRequest,
+      this.controller.createMovie.bind(this.controller)
     )
 
     this.routes.get(

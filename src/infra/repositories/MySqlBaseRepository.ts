@@ -55,9 +55,14 @@ abstract class MySqlBaseRepository<T extends BaseEntity> implements IRepository<
     return await this.entityRepository.save(entity);
   }
 
-  async delete(where: Record<string, any>): Promise<boolean> {
-    const result = await this.entityRepository.delete(where)
-    return result.affected ? result.affected > 0 :false
+  async delete(entity: T): Promise<boolean> {
+    let result
+
+    if (entity.hasId()) {
+      result = await this.entityRepository.remove(entity)
+    }
+
+    return result ? true :false
   }
 
 }
