@@ -10,13 +10,17 @@ import { ServiceProviderIds } from '@/domain/ServiceProvideIds'
 import { IStorageService } from '@/domain/storage/IStorageService'
 import { AuthSession } from '@/domain/security'
 import { UpdateMovieDto } from '@/domain/dto/UpdateMovieDto'
+import MovieStatus from '@/domain/enums/MovieStatus'
+import IDatabase from '@/domain/database/IDatabase'
+import { S3StorageService } from '@/infra/S3StorageService'
 
 @injectable()
 class MovieManager extends BaseManager {
 
   constructor(
     @inject(MovieService) private movieService: MovieService,
-    @inject(ServiceProviderIds.StorageService) private storage: IStorageService
+    @inject(ServiceProviderIds.StorageService) private storage: IStorageService,
+    @inject(ServiceProviderIds.Database) private database: IDatabase,
   ) {
     super()
   }
@@ -60,27 +64,65 @@ class MovieManager extends BaseManager {
     return movies
   }
 
-  async createMovie(input: CreateMovieDto, auth: AuthSession): Promise<Movie> {
+  async createMovie(input: CreateMovieDto, auth: AuthSession): Promise<Movie | null> {
+    let movie
+    let filePath
 
     const { image } = input
-
     const fileKey = `movies/${ getUUID() }-${image!.name}`
-    const filePath = await writeFile(image?.name!, image!)
 
-    await this.storage.putObject(fileKey, filePath!)
+    try {
+      await this.database.startTransaction()
 
-    const movie = this.movieService.createMovie(
-      {
-        ...input,
-        imageURL: fileKey,
-        thumbnailURL: fileKey,
-      },
-      auth
-    )
+      filePath = await writeFile(image?.name!, image!)
+      await this.storage.putObject(fileKey, filePath!)
 
-    await deleteFile(filePath!)
+      const draftMovies = await this.movieService.getDaftMovies(auth.user!)
 
-    return movie
+      if (draftMovies.length > 0) {
+
+        movie = await this.movieService.updateMovie(
+          draftMovies[0].id,
+          {
+            ...input,
+            imageURL: fileKey,
+            thumbnailURL: fileKey,
+            status: MovieStatus.DRAFT
+          },
+          auth
+        )
+
+      } else {
+
+        movie = await this.movieService.createMovie(
+          {
+            ...input,
+            imageURL: fileKey,
+            thumbnailURL: fileKey,
+          },
+          auth
+        )
+
+      }
+
+      await this.database.commit()
+
+      return movie
+
+    } catch (err) {
+      console.log("[createMovie] Error: ", err)
+      await this.storage.deleteObject(fileKey)
+      await this.database.rollback()
+      if (this.isDevelopment) {
+        throw err
+      }
+    } finally {
+      if (filePath) {
+        await deleteFile(filePath)
+      }
+    }
+
+    return null
   }
 
   async updateMovie(id: string, input: UpdateMovieDto, auth: AuthSession): Promise<Movie> {

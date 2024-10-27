@@ -3,6 +3,7 @@ import { GatewayRouter } from '../GatewayRouter'
 import MoviesController from '../controllers/MoviesController'
 import GetAllMoviesRequest from '../requests/GetAllMoviesRequest'
 import PostCreateMovieRequest from '../requests/PostCreateMovieRequest'
+import PutUpdateMovieRequest from '../requests/PutUpdateMovieRequest'
 
 
 @injectable()
@@ -30,6 +31,7 @@ class MoviesRouter extends GatewayRouter {
 
     this.routes.put(
       '/:movieId',
+      ...PutUpdateMovieRequest,
       this.controller.updateMovie.bind(this.controller)
     )
 

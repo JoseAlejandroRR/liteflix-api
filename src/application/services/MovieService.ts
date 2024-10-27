@@ -96,6 +96,17 @@ class MovieService {
 
     return result
   }
+
+  async getDaftMovies(user: User): Promise<Movie[]> {
+    const movies = await this.movieRepository.find({
+      where: {
+        userId: user.id,
+        status: MovieStatus.DRAFT
+      }
+    })
+
+    return movies
+  }
 }
 
 export default MovieService

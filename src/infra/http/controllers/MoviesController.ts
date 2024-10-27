@@ -54,7 +54,11 @@ class MoviesController extends BaseController {
 
     const movie = await this.movieManager.createMovie(input, this.getAuthSession(ctx))
 
-    return ctx.json(ViewModel.createOne(MovieViewModel, movie), 201)
+    if (movie) {
+      return ctx.json(ViewModel.createOne(MovieViewModel, movie), 201)
+    }
+
+    return ctx.json({ success: false }, 400)
   }
 
   async updateMovie(ctx: Context) {
