@@ -3,4 +3,5 @@ export enum ServiceProviderIds {
 
   //Repositories
   UserRepository = 'UserRepository',
+  MovieRepository = 'MovieRepository',
 }

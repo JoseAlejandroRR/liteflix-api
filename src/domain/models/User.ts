@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, BeforeInsert, BeforeUpdate, OneToMany } from 'typeorm'
 import UserRole from '../enums/UserRole'
 import bcrypt from 'bcryptjs'
+import { UserMovie } from './UserMovie'
+import { Movie } from './Movie'
 
 export const TABLE_USERS = 'users'
 @Entity(TABLE_USERS)
@@ -40,8 +42,19 @@ export class User extends BaseEntity {
     }
   }
 
+  @OneToMany(() => UserMovie, (userMovies) => userMovies.user)
+  movies!: UserMovie[];
+
   async checkPassword(password: string): Promise<boolean> {
     if (!this.password) return false
     return bcrypt.compare(password, this.password)
+  }
+
+  addMovieToList(movie: Movie): UserMovie {
+    const mymovie = new UserMovie()
+    mymovie.userId = this.id
+    mymovie.movieId = movie.id
+
+    return mymovie
   }
 }

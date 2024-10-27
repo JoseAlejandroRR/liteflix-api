@@ -1,3 +1,5 @@
+import { PaginationResult } from '../models'
+
 abstract class ViewModel<T> {
 
   private data: Record<string, any>
@@ -20,6 +22,17 @@ abstract class ViewModel<T> {
     return data.map((item:T) => new clase(item))
   }
   
+  static createPage<T extends Record<string, any>, U extends ViewModel<T>>(
+    clase: new (data: T) => U,
+    paginatedData: PaginationResult<T>
+  ) {
+    return {
+      results: paginatedData.results.map((item: T) => ViewModel.createOne(clase, item)),
+      pageSize: paginatedData.pageSize,
+      total: paginatedData.total,
+      page: paginatedData.page,
+    }
+  }
 
   public toJSON(): Record<string, any> {
     return this.data
