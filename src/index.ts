@@ -21,7 +21,7 @@ const gateway: HTTPGateway = container.resolve(HTTPGateway)
 
 gateway.bindRoutes(httpServer)
 
-if (NODE_ENV !== 'production') {
+if (PORT && NODE_ENV && NODE_ENV !== 'production') {
   serve({
       fetch: httpServer.fetch,
       port: Number(PORT),

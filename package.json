@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --project ./tsconfig.json --respawn --transpile-only src/index.ts",
-    "build": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias && node builder.js",
     "start": "NODE_ENV=local node dist/index.js",
     "typeorm": "ts-node-dev ./node_modules/typeorm/cli",
     "migration:generate": "NODE_ENV=development ts-node-dev ./node_modules/typeorm/cli -- migration:create",
@@ -20,6 +20,7 @@
     "@aws-sdk/client-s3": "^3.678.0",
     "@hono/node-server": "^1.13.2",
     "@hono/zod-validator": "^0.4.1",
+    "@types/mime": "^3.0.4",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
     "hono": "^4.6.6",
@@ -45,12 +46,13 @@
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.7",
-    "@types/mime": "^4.0.0",
     "@types/node": "^22.8.1",
     "@types/uuid": "^10.0.0",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "archiver": "^7.0.1",
+    "fs-extra": "^11.2.0"
   },
   "_moduleAliases": {
     "@/*": "./dist/*"

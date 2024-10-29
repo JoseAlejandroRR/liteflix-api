@@ -13,6 +13,6 @@ export const MysqlConfig = new DataSource({
   database: DB_DATABASE,
   synchronize: false,
   logging: DB_LOG === 'true' ? 'all' : false,
-  entities: isDevelopment ? ['src/domain/models/*.ts'] : ['dist/domain/models/*.js'],
-  migrations: isDevelopment ? ['src/database/migrations/*.ts'] :['dist/database/migrations/*.js'],
+  entities: isDevelopment ? ['src/domain/models/*.ts'] : ['./domain/models/*.js'],
+  migrations: isDevelopment ? ['src/database/migrations/*.ts'] :['./database/migrations/*.js'],
 })

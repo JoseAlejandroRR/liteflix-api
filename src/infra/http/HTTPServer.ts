@@ -11,7 +11,6 @@ const serverAddress = SERVER_ORIGINS ? String(SERVER_ORIGINS).split(',') : ['*']
 const httpServer = new Hono()
 
 // Middleware for CORS
-httpServer.use('*', cors({ origin: '*' }))
 httpServer.use('*', cors({
   origin: serverAddress,
 }))

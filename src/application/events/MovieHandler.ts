@@ -8,15 +8,11 @@ import { EventType } from '@/domain/events/EventType'
 import { Movie } from '@/domain/models/Movie'
 import { IStorageService } from '@/domain/storage/IStorageService'
 import ImageProcessor from '@/infra/ImageProcesor'
-import { deleteFile, getFileNameFromPath } from '@/infra/utils'
 import MovieStatus from '@/domain/enums/MovieStatus'
 import { User } from '@/domain/models/User'
 import UserRole from '@/domain/enums/UserRole'
 import { UserMovie } from '@/domain/models/UserMovie'
 import { IRepository } from '@/domain/repositories/IRepository'
-
-
-const { TEMP_FOLDER } = process.env
 
 @injectable()
 export class MovieHandler extends EventHandler  {
@@ -38,11 +34,11 @@ export class MovieHandler extends EventHandler  {
         const { payload } = event
         const movie: Movie = payload.movie
 
-        const imagePath = await this.storage.getObject(movie.imageURL!)
-        const thumbName = `thumb_${getFileNameFromPath(imagePath)}`
-        const thumbPath = `${TEMP_FOLDER}/thumb_${thumbName}`
+        //const imagePath = await this.storage.getObject(movie.imageURL!)
+        //const thumbName = `thumb_${getFileNameFromPath(imagePath)}`
+        //const thumbPath = `${TEMP_FOLDER}/thumb_${thumbName}`
 
-        await this.imageProcessor.generateFromImage({
+        /*await this.imageProcessor.generateFromImage({
           originPath: imagePath,
           outputPath: thumbPath,
           options: {
@@ -50,19 +46,31 @@ export class MovieHandler extends EventHandler  {
             height: 225,
             fit: 'cover'
           }
-        })
+        })*/
 
-        const fileKey = `movies/${thumbName}`
-        await this.storage.putObject(fileKey, thumbPath)
+        if (!movie.imageURL) return
+
+        const thumbnailKey = await this.imageProcessor.generateFromS3Key(
+          movie.imageURL
+        )
+
+        //const fileKey = `movies/${thumbName}`
+        //await this.storage.putObject(fileKey, thumbPath)
+
+        if (!thumbnailKey) {
+          console.info('[EventType.Movie.Created]: Thumbnail generation failed')
+          console.info(`[EventType.Movie.Created]: movieId: ${movie.id}`)
+          console.info(`[EventType.Movie.Created]: imageURL: ${movie.imageURL}`)
+        }
 
         movie.update({
-          thumbnailURL: fileKey
+          thumbnailURL: thumbnailKey
         })
 
         await this.movieRepository.update(movie)
 
-        await deleteFile(imagePath)
-        await deleteFile(thumbPath)
+        //await deleteFile(imagePath)
+        //await deleteFile(thumbPath)
 
         console.info('[EventType.Movie.Created]: Thumbnail Generated')
  
