@@ -4,6 +4,9 @@ import MoviesController from '../controllers/MoviesController'
 import GetAllMoviesRequest from '../requests/GetAllMoviesRequest'
 import PostCreateMovieRequest from '../requests/PostCreateMovieRequest'
 import PutUpdateMovieRequest from '../requests/PutUpdateMovieRequest'
+import { CacheControl } from '../middlewares/CacheControl'
+import GetMovieRequest from '../requests/GetMovieRequest'
+import DeleteMovieRequest from '../requests/DeleteEmployeeRequest'
 
 
 @injectable()
@@ -21,11 +24,13 @@ class MoviesRouter extends GatewayRouter {
     this.routes.get(
       '/my-movies',
       ...GetAllMoviesRequest,
+      CacheControl(),
       this.controller.getMyMovieList.bind(this.controller)
     )
 
     this.routes.delete(
       '/:movieId',
+      ...DeleteMovieRequest,
       this.controller.deleteById.bind(this.controller)
     )
 
@@ -37,6 +42,7 @@ class MoviesRouter extends GatewayRouter {
 
     this.routes.get(
       '/:movieId',
+      ...GetMovieRequest,
       this.controller.getMovieById.bind(this.controller)
     )
 
@@ -49,6 +55,7 @@ class MoviesRouter extends GatewayRouter {
     this.routes.get(
       '/',
       ...GetAllMoviesRequest,
+      CacheControl(),
       this.controller.getAllMovies.bind(this.controller)
     )
   }

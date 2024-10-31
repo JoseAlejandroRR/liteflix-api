@@ -11,6 +11,9 @@ import ApplicationContext from './infra/ApplicationContext'
 import { container } from 'tsyringe'
 import IDatabase from './domain/database/IDatabase'
 import { ServiceProviderIds } from './domain/ServiceProvideIds'
+import { swaggerDoc } from './infra/http/swagger'
+import { swaggerUI} from '@hono/swagger-ui'
+import { Context } from 'hono'
 
 const { NODE_ENV, PORT } = process.env
 
@@ -20,6 +23,11 @@ const database:IDatabase = container.resolve(ServiceProviderIds.Database)
 const gateway: HTTPGateway = container.resolve(HTTPGateway)
 
 gateway.bindRoutes(httpServer)
+
+httpServer.get('/swagger', swaggerUI({ url:'/docs' }))
+httpServer.use('/docs', async (ctx: Context) => {
+  return ctx.json(swaggerDoc)
+})
 
 if (PORT && NODE_ENV && NODE_ENV !== 'production') {
   serve({

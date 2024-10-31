@@ -33,6 +33,8 @@ export class MovieHandler extends EventHandler  {
       async (event: IEvent) => {
         const { payload } = event
         const movie: Movie = payload.movie
+        console.info('[EventType.Movie.Created]: Id: ', movie.id)
+        console.log(movie)
 
         //const imagePath = await this.storage.getObject(movie.imageURL!)
         //const thumbName = `thumb_${getFileNameFromPath(imagePath)}`
@@ -46,16 +48,17 @@ export class MovieHandler extends EventHandler  {
             height: 225,
             fit: 'cover'
           }
-        })*/
-
-        if (!movie.imageURL) return
+        })
+        //const fileKey = `movies/${thumbName}`
+        //await this.storage.putObject(fileKey, thumbPath)
+        */
+        /*
+        if (!movie.imageURL) return;
 
         const thumbnailKey = await this.imageProcessor.generateFromS3Key(
           movie.imageURL
         )
 
-        //const fileKey = `movies/${thumbName}`
-        //await this.storage.putObject(fileKey, thumbPath)
 
         if (!thumbnailKey) {
           console.info('[EventType.Movie.Created]: Thumbnail generation failed')
@@ -72,7 +75,7 @@ export class MovieHandler extends EventHandler  {
         //await deleteFile(imagePath)
         //await deleteFile(thumbPath)
 
-        console.info('[EventType.Movie.Created]: Thumbnail Generated')
+        console.info('[EventType.Movie.Created]: Thumbnail Generated')*/
  
     })
 

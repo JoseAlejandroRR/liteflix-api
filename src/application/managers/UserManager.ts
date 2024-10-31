@@ -3,10 +3,10 @@ import UserService from '../services/UserService'
 import { AuthenticationResult, UserCredentials } from '@/domain/security'
 import BaseManager from './BaseManager'
 import { sign } from 'jsonwebtoken'
-import ViewModel from '@/domain/views/ViewModel'
-import UserViewModel from '@/domain/views/auth/UserViewModel'
+import ViewModel from '@/infra/views/ViewModel'
+import UserViewModel from '@/infra/views/auth/UserViewModel'
 
-const { JWT_SECRET_KEY } = process.env
+const { JWT_SECRET_KEY, JWT_TOKEN_TIMEOUT } = process.env
 
 @injectable()
 class UserManager extends BaseManager {
@@ -26,7 +26,7 @@ class UserManager extends BaseManager {
     const userView = ViewModel.createOne(UserViewModel, user)
     const token =  sign({
         ...userView.toJSON(),
-        exp: Math.floor(Date.now() / 1000) + 60 * (this.isDevelopment ? 60 * 48 : 120 )
+        exp: Math.floor(Date.now() / 1000) + 60 * (!this.isDevelopment ? 60 * 48 : Number(JWT_TOKEN_TIMEOUT) )
       },
       String(JWT_SECRET_KEY)
     )

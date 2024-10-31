@@ -5,9 +5,9 @@ import { OptionalInteger } from '.'
 
 /**
  * @swagger
- * /movies:
+ * /movies/my-movies:
  *   get:
- *     summary: Get all Movies
+ *     summary: Get Movies List by User
  *     security:
  *       - bearerAuth: []
  *     tags:
@@ -20,7 +20,7 @@ import { OptionalInteger } from '.'
  *         required: true
  *     responses:
  *       200:
- *         description: Get All Movies
+ *         description: Get Movies List by User
  *         content:
  *           application/json:
  *             schema:
@@ -45,10 +45,10 @@ import { OptionalInteger } from '.'
  *         description: Unauthorized
  */
 
-const GetAllMoviesRequest: MiddlewareHandler[] = [
+const GetMyMoviesRequest: MiddlewareHandler[] = [
   zValidator('query', z.object({
     take: OptionalInteger(1, 50),
   }))
 ]
 
-export default GetAllMoviesRequest
+export default GetMyMoviesRequest

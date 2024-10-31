@@ -1,4 +1,4 @@
-import { PaginationResult } from '../models'
+import { PaginationResult } from '@/domain/models'
 
 abstract class ViewModel<T> {
 

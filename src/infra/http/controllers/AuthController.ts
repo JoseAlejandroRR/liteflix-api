@@ -5,8 +5,8 @@ import { inject, injectable } from 'tsyringe'
 import UserManager from '@/application/managers/UserManager'
 import { MysqlConfig } from '@/infra/database/MysqlConfig'
 import { User } from '@/domain/models/User'
-import ViewModel from '@/domain/views/ViewModel'
-import LoginSuccessViewModel from '@/domain/views/auth/LoginSuccessViewModel'
+import ViewModel from '@/infra/views/ViewModel'
+import LoginSuccessViewModel from '@/infra/views/auth/LoginSuccessViewModel'
 
 @injectable()
 class AuthController extends BaseController {

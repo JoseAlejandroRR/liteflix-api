@@ -1,10 +1,10 @@
-//import sharp, { FitEnum } from 'sharp'
+
+import axios from 'axios'
 
 interface ImageOptions {
   width?: number;
   height?: number;
   quality?: number;
-  //fit?: keyof FitEnum;
   originalSize?: boolean;
 }
 
@@ -20,22 +20,19 @@ const generateExternalThumbnail = async(
   imageKey: string
 ): Promise<Record<string, any> | null> => {
   try {
-    const response = await fetch(`${String(AWS_LAMBDA_RESIZER_URL)}?imageURL=${imageKey}`, {
-      method: 'POST'
-    });
+    console.log('generateExternalThumbnail started')
+    const endpoint = `${String(AWS_LAMBDA_RESIZER_URL)}?imageURL=${imageKey}`
+    console.log('Endpoint to generate: ', endpoint);
+    const response = await axios.post(endpoint);
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`)
-    }
+    const data: Record<string, any> = response.data;
+    console.log("generateExternalThumbnail: ", data);
 
-    const data: Record<string, any> = await response.json()
-    console.log("generateExternalThumbnail: ",data)
-
-    return data
+    return data;
   } catch (error) {
     console.error('[generateExternalThumbnail] Error:', error);
   }
-  return null
+  return null;
 }
 class ImageProcessor {
   async generateFromImage({ originPath, outputPath, options = {} }: GenerateFromImageParams): Promise<void> {
@@ -46,7 +43,7 @@ class ImageProcessor {
       //fit: 'cover',
       originalSize: false,
       ...options
-    };
+    }
 
     /*await sharp(originPath)
       .resize(opc.originalSize ? undefined : { width: opc.width, height: opc.height, fit: opc.fit })
@@ -58,7 +55,8 @@ class ImageProcessor {
 
   async generateFromS3Key(key: string): Promise<string | undefined> {
     const json = await generateExternalThumbnail(key)
-    if (!json) return undefined
+    if (!json) return undefined;
+
     return json.thumbnailURL
   }
 }
