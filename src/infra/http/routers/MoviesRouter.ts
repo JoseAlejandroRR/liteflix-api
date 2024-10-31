@@ -6,7 +6,7 @@ import PostCreateMovieRequest from '../requests/PostCreateMovieRequest'
 import PutUpdateMovieRequest from '../requests/PutUpdateMovieRequest'
 import { CacheControl } from '../middlewares/CacheControl'
 import GetMovieRequest from '../requests/GetMovieRequest'
-import DeleteMovieRequest from '../requests/DeleteEmployeeRequest'
+import DeleteMovieRequest from '../requests/DeleteMovieRequest'
 
 
 @injectable()

@@ -15,6 +15,7 @@ const OUTPUT_ZIP = path.resolve(__dirname, 'dist.zip');
 
     await fs.copy(path.resolve(__dirname, 'package.json'), path.join(TEMP_FOLDER, 'package.json'));
     await fs.copy(path.resolve(__dirname, 'tsconfig.json'), path.join(TEMP_FOLDER, 'tsconfig.json'));
+    await fs.copy(path.resolve(__dirname, './tdd-reports/'), path.join(TEMP_FOLDER, './tdd-reports/'));
 
     execSync('npm install --production --os=linux --cpu=x64', { cwd: TEMP_FOLDER, stdio: 'inherit' });
     //execSync('npm install --os=linux --cpu=x64 sharp', { cwd: TEMP_FOLDER, stdio: 'inherit' });
@@ -25,11 +26,11 @@ const OUTPUT_ZIP = path.resolve(__dirname, 'dist.zip');
 
     output.on('close', () => {
       console.log(`ZIP generated:  (${archive.pointer()} bytes)`);
-    });
+    })
 
     archive.on('error', (err) => {
       throw err;
-    });
+    })
 
     archive.pipe(output);
 

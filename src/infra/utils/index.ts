@@ -11,7 +11,7 @@ export const checkFileType = (file: File, extensions: string[]) => {
 
     if (file?.name) {
         const fileType = file.name.split(".").pop();
-        if (extensions.includes(fileType!)) return true
+        if (extensions.includes(fileType!)) return true;
     }
     return false
 }
@@ -61,3 +61,5 @@ export const getFileNameFromPath = (filePath: string): string => {
 }
 
 export const getUUID = (): string => v4()
+
+export const generateNumberRandom = (limit: number = 1000000, init: number = 0): number => Math.ceil((Math.random() + init) * limit)
