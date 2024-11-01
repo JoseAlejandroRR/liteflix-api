@@ -1,12 +1,13 @@
 import fs from 'fs'
 import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 
-const REGION = 'us-east-1'
-const BUCKET_NAME = 'image-resizer-testing-01'
+const {AWS_REGION, AWS_BUCKET_NAME} = process.env
+
+const BUCKET_NAME = String(AWS_BUCKET_NAME)
 
 export const DATABASE_FILENAME = 'movies.json'
 
-const s3Client = new S3Client({ region: REGION })
+const s3Client = new S3Client({ region: AWS_REGION })
 
 export const getObjectFromS3 = async (key) => {
   try {
